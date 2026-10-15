@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>🌾 مزرعة الصحاب — Firestore</title>
+<style>
+:root{color-scheme:light;--card:#fffdf4;--tx:#3b2a14;--mut:#8a7556;--bd:#e3d3a8;--bg2:#f1ffdc;--soil:#7a4a22;--ac:#3fa34d;--gold:#f4b400}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Tahoma,"Segoe UI",system-ui,sans-serif;color:var(--tx);background:linear-gradient(#9be2ff,#d7f8bb);overflow-x:hidden}
+button,input{font:inherit}button{cursor:pointer}.wrap{max-width:1100px;margin:auto;padding:12px}.card{background:var(--card);border:2px solid var(--bd);border-radius:18px;padding:12px;box-shadow:0 5px 0 var(--bd);margin-bottom:12px}
+h1{margin:0 0 6px;font-size:27px}.mut{color:var(--mut);font-size:12px;line-height:1.7}.btn{border:0;border-radius:12px;padding:9px 13px;background:var(--ac);color:#fff;font-weight:700;box-shadow:0 4px 0 #2b7a37}.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #2b7a37}.btn.alt{background:var(--gold);color:#3b2a14;box-shadow:0 4px 0 #b88700}.btn:disabled{opacity:.5;cursor:not-allowed}
+input{width:100%;padding:11px;border:2px solid var(--bd);border-radius:12px;background:var(--bg2);color:var(--tx);margin:5px 0}#login{max-width:440px;margin:6vh auto}.tabs,.top,.modes,.row,.qk{display:flex;gap:8px;flex-wrap:wrap}.tabs .btn{flex:1;opacity:.55}.tabs .on{opacity:1}#err{color:#c22;min-height:20px;font-size:13px}.top{align-items:center;margin-bottom:12px}.pill{background:var(--card);border:2px solid var(--bd);border-radius:99px;padding:7px 12px;font-weight:bold}.xp{flex:1;min-width:100px;height:12px;border-radius:9px;background:var(--bd);overflow:hidden}.xp i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3fa34d,#b7f34a)}
+.main{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}.farm{flex:2 1 440px;min-width:0}.side{flex:1 1 300px;min-width:0}.grid{direction:ltr;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:10px;border-radius:14px;background:repeating-linear-gradient(45deg,#6ccf5b,#6ccf5b 12px,#62c452 12px,#62c452 24px)}
+.plot{aspect-ratio:1;border:0;border-radius:10px;background:repeating-linear-gradient(0deg,transparent 0 9px,#0002 9px 11px),radial-gradient(circle at 30% 25%,#9a622f,var(--soil) 60%,#5f3818);box-shadow:inset 0 -5px 0 #0004;font-size:clamp(20px,5vw,36px);display:flex;align-items:center;justify-content:center;position:relative;padding:0}.plot.ready{outline:3px solid var(--gold);animation:bob 1s ease-in-out infinite}.plot.ready:after{content:"✨";position:absolute;right:0;top:0;font-size:14px}@keyframes bob{50%{transform:translateY(-3px)}}.plot progress{position:absolute;bottom:3px;left:10%;width:80%;height:5px}
+#players{display:flex;gap:8px;overflow:auto;padding:4px 2px 10px}.player{display:flex;align-items:center;gap:7px;flex:0 0 auto;border:2px solid var(--bd);background:var(--card);border-radius:14px;padding:7px 10px;color:var(--tx)}.player.active{border-color:var(--ac)}.player small{display:block;color:var(--mut)}
+#tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}.tb{border:2px solid var(--bd);background:var(--bg2);color:var(--tx);border-radius:10px;padding:7px 9px}.tb.on{background:var(--ac);color:#fff;border-color:var(--ac)}#panel{max-height:60vh;overflow:auto}.shop{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.crop{border:2px solid var(--bd);background:var(--bg2);color:var(--tx);border-radius:12px;padding:6px 1px;font-size:11px}.crop span{display:block;font-size:24px}.crop.on{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac)}.crop.lock{opacity:.45}.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 2px;border-bottom:1px dashed var(--bd);font-size:13px}.item small{display:block;color:var(--mut);font-size:11px}.row input{margin:0;min-width:0}.row button{flex-shrink:0}#log{height:190px;overflow:auto;background:var(--bg2);border-radius:10px;padding:8px;font-size:13px;margin:8px 0}#log div{margin:4px 0;overflow-wrap:anywhere}#log b{color:var(--ac)}.qk button{border:2px solid var(--bd);background:var(--bg2);color:var(--tx);border-radius:99px;padding:4px 10px}.notice{padding:8px;background:#fff4ce;border-radius:10px;font-size:12px;margin-top:8px}
+@media(max-width:600px){.wrap{padding:8px}.farm,.side{flex-basis:100%}h1{font-size:23px}.grid{gap:4px;padding:7px}.plot{font-size:26px}.shop{grid-template-columns:repeat(4,minmax(0,1fr))}.top .pill{font-size:13px;padding:6px 9px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="login" class="card">
+<h1>🌾 مزرعة الصحاب</h1><div class="mut">اعمل سيرفر خاص، وشارك اسم السيرفر والباسورد مع أصحابك.</div>
+<div class="tabs"><button class="btn on" id="newTab">🏗️ اعمل سيرفر</button><button class="btn" id="joinTab">🚪 ادخل سيرفر</button></div>
+<input id="server" placeholder="اسم السيرفر: a-z / 0-9 / - / _" maxlength="20" autocomplete="off">
+<input id="password" type="password" placeholder="باسورد السيرفر" autocomplete="new-password">
+<input id="playerName" placeholder="اسمك في اللعبة" maxlength="14">
+<button class="btn alt" id="start" style="width:100%;margin-top:8px">يلا نزرع 🚜</button>
+<div id="err"></div><div class="mut" id="status">جاري تهيئة Firebase…</div>
+<div class="notice">لا تستخدم باسورد مهم أو مستخدم في حسابات أخرى. هذه نسخة تجريبية، ويجب ضبط قواعد Firestore قبل نشرها.</div>
+</section>
+<section id="game" hidden>
+<div class="top"><div class="pill">🖥️ <span id="serverLabel"></span></div><div class="pill">🪙 <span id="coins">30</span></div><div class="pill">⭐ <span id="level">1</span></div><div class="xp"><i id="xpbar"></i></div><button class="btn alt" id="invite">📋 ادعي صاحبك</button></div>
+<div id="players"></div>
+<div class="main">
+<div class="farm card"><div class="mut" id="farmTitle">مزرعتك</div><div class="grid" id="grid"></div><div class="modes" id="modes" style="margin-top:10px"></div><div class="mut" style="margin-top:8px">اضغط أرض فاضية للزراعة، واضغط المحصول الناضج للحصاد. بيع المحاصيل من المخزن.</div></div>
+<div class="side">
+<div class="card"><div id="tabs"></div><div id="panel"></div></div>
+<div class="card"><b>💬 شات السيرفر</b><div id="log"></div><div class="qk" id="quick"><button>👍</button><button>😂</button><button>🔥</button><button>🌾</button><button>💰</button><button>يلا!</button></div><div class="row"><input id="message" placeholder="اكتب رسالة…" maxlength="120"><button class="btn" id="send">➤</button></div></div>
+</div></div>
+</section>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyArvGlHYTcBw4DmnuPjFdi6WhBcYIiMYhE",
+  authDomain: "login-75ba4.firebaseapp.com",
+  projectId: "login-75ba4",
+  storageBucket: "login-75ba4.firebasestorage.app",
+  messagingSenderId: "157555165004",
+  appId: "1:157555165004:web:82a5e2bfe8b864993db1e9",
+  measurementId: "G-QRQE21YPN0"
+};
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+const $ = s => document.querySelector(s);
+const escapeHTML = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const cropNames = "قمح,جزر,طماطم,ذرة,قرع,بطاطس,بصل,ثوم,خس,خيار,باذنجان,شطة,فلفل,بروكلي,فراولة,بطيخ,شمام,عنب,برتقال,ليمون,تفاح,كمثرى,خوخ,كرز,موز,أناناس,مانجو,جوز هند,كيوي,توت أزرق,فول,فول سوداني,مشروم,زيتون,دوار شمس,ورد,توليب".split(",");
+const emojis = ["🌾","🥕","🍅","🌽","🎃","🥔","🧅","🧄","🥬","🥒","🍆","🌶️","🫑","🥦","🍓","🍉","🍈","🍇","🍊","🍋","🍎","🍐","🍑","🍒","🍌","🍍","🥭","🥥","🥝","🫐","🫘","🥜","🍄","🫒","🌻","🌹","🌷"];
+const crops = cropNames.map((name,i)=>({name,emoji:emojis[i],cost:Math.round(3*1.2**i),grow:Math.round(6*1.13**i),price:Math.round(6*1.13**i*2.1+i),level:1+(i>>1)}));
+const animals = [{emoji:"🐔",name:"فراخ",product:"🥚",productName:"بيض",cost:100,seconds:40,price:7,level:1},{emoji:"🐄",name:"بقرة",product:"🥛",productName:"لبن",cost:400,seconds:80,price:24,level:4},{emoji:"🐑",name:"خروف",product:"🧶",productName:"صوف",cost:900,seconds:120,price:60,level:7},{emoji:"🐝",name:"نحل",product:"🍯",productName:"عسل",cost:1800,seconds:150,price:130,level:11}];
+const tabs = [["seeds","🌱 البذور"],["shop","🛒 المتجر"],["bag","🎒 المخزن"],["animals","🐔 الحيوانات"]];
+let user=null, roomId="", roomName="", player=null, playerUnsub=null, chatUnsub=null, roomPlayersUnsub=null;
+let allPlayers={}, selected=0, tab="seeds", viewUid="", mode="plant", joiningMode="new", saveTimer=null, chatKeys=new Set();
+const level = xp => 1+Math.floor(Math.sqrt(Math.max(0,xp)/10));
+const fmt = seconds => seconds<60?Math.round(seconds)+" ثانية":Math.round(seconds/6)/10+" دقيقة";
+const cropGrow = (crop,p) => crop.grow*1000*Math.pow(.9,p.speed||0);
+const progress = (p,now=Date.now()) => Math.min(1,(now-p.plantedAt+(p.waterBonus||0))/cropGrow(crops[p.crop],player||{speed:0}));
+const defaultPlayer = name => ({name,coins:30,xp:0,helped:0,plots:12,speed:0,plants:Array(36).fill(null),inventory:{},animals:[0,0,0,0],animalAt:[Date.now(),Date.now(),Date.now(),Date.now()],fertilizer:0,harvester:0,updatedAt:Date.now()});
+function normalizePlayer(d,name="مزارع"){const p={...defaultPlayer(name),...(d||{})};p.name=name||p.name;p.plants=Array.isArray(p.plants)?p.plants:Array(36).fill(null);while(p.plants.length<36)p.plants.push(null);p.inventory=p.inventory||{};p.animals=Array.isArray(p.animals)?p.animals:[0,0,0,0];p.animalAt=Array.isArray(p.animalAt)?p.animalAt:[Date.now(),Date.now(),Date.now(),Date.now()];return p}
+function errorText(e){if(e?.code==="permission-denied")return "Firestore رفض العملية. راجع قواعد الأمان وتفعيل Anonymous Authentication.";if(e?.code==="auth/operation-not-allowed")return "فعّل Anonymous Authentication من Firebase Console > Authentication > Sign-in method.";if(e?.code==="unavailable")return "الخدمة غير متاحة حاليًا؛ تحقق من الإنترنت.";return e?.message||String(e)}
+function setError(t){$("#err").textContent=t||""}
+function notify(t){$("#status").textContent=t}
+async function hashRoom(name,password){const bytes=new TextEncoder().encode("farm-friends-v1:"+name+":"+password);const digest=await crypto.subtle.digest("SHA-256",bytes);return [...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+function roomDoc(){return doc(db,"rooms",roomId)}
+function playerDoc(uid=user.uid){return doc(db,"rooms",roomId,"players",uid)}
+function saySystem(message){appendChat("📢",message)}
+function appendChat(name,message){const row=document.createElement("div");const b=document.createElement("b");b.textContent=name+": ";row.append(b,document.createTextNode(message));$("#log").append(row);while($("#log").children.length>80)$("#log").firstChild.remove();$("#log").scrollTop=$("#log").scrollHeight}
+function getCropPrice(i){return Math.max(1,Math.round(crops[i].price*(1+.25*Math.sin(Date.now()/90000+i*1.7))))}
+function savePlayer(){if(!user||!roomId||!player)return;player.updatedAt=Date.now();clearTimeout(saveTimer);saveTimer=setTimeout(async()=>{try{await setDoc(playerDoc(),player)}catch(e){notify("تعذر الحفظ: "+errorText(e))}},250)}
+function renderHUD(){if(!player)return;$("#coins").textContent=player.coins;const l=level(player.xp),lo=(l-1)**2*10,hi=l*l*10;$("#level").textContent="مستوى "+l;$("#xpbar").style.width=Math.max(0,Math.min(100,(player.xp-lo)/(hi-lo)*100))+"%"}
+function addXP(n){const before=level(player.xp);player.xp+=n;if(level(player.xp)>before)saySystem("وصلت للمستوى "+level(player.xp)+"!")}
+function pop(text){const n=document.createElement("span");n.textContent=text;n.style.cssText="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#2a2418;color:white;padding:10px 15px;border-radius:12px;z-index:10";document.body.append(n);setTimeout(()=>n.remove(),1700)}
+function renderPlayers(){const entries=Object.entries(allPlayers);if(player&&!allPlayers[user.uid])allPlayers[user.uid]=player;$("#players").innerHTML=entries.sort((a,b)=>(b[1].coins||0)-(a[1].coins||0)).map(([id,p])=>`<button class="player ${id===viewUid?"active":""}" data-uid="${id}"><span style="font-size:27px">${id===user.uid?"🏡":"🧑‍🌾"}</span><span><b>${escapeHTML(p.name||"مزارع")}${id===user.uid?" (أنت)":""}</b><small>⭐ ${level(p.xp||0)} · 🪙 ${p.coins||0}</small></span></button>`).join("");}
+function renderGrid(){const mine=viewUid===user?.uid,d=mine?player:allPlayers[viewUid];if(!d)return;const now=Date.now();$("#farmTitle").textContent=mine?"🏡 مزرعتك":"👀 مزرعة "+(d.name||"صديقك");$("#grid").innerHTML=d.plants.slice(0,d.plots||12).map((p,i)=>{if(!p)return `<button class="plot" data-plot="${i}" aria-label="أرض فارغة"></button>`;const f=Math.min(1,(now-p.plantedAt+(p.waterBonus||0))/(crops[p.crop].grow*1000*Math.pow(.9,d.speed||0)));return `<button class="plot ${f>=1?"ready":""}" data-plot="${i}" aria-label="${escapeHTML(crops[p.crop].name)}">${f>=1?crops[p.crop].emoji:f>.34?"🌿":"🌱"}${f<1?`<progress max="1" value="${f}"></progress>`:""}</button>`}).join("");}
+function renderModes(){const buttons=[`<button class="btn ${mode==="plant"?"alt":""}" data-mode="plant">🌱 زراعة</button>`,`<button class="btn ${mode==="fert"?"alt":""}" data-mode="fert">🧪 سماد (${player.fertilizer})</button>`];if(player.harvester)buttons.push('<button class="btn alt" data-mode="harvestAll">✂️ حصاد الكل</button>','<button class="btn alt" data-mode="plantAll">🌾 زرع الكل</button>');$("#modes").innerHTML=buttons.join("");}
+function renderPanel(){if(!player)return;$("#tabs").innerHTML=tabs.map(([id,label])=>`<button class="tb ${tab===id?"on":""}" data-tab="${id}">${label}</button>`).join("");let html="",L=level(player.xp);const item=(emoji,name,desc,action,label,disabled=false)=>`<div class="item"><span>${emoji} ${name}<small>${desc}</small></span><button class="btn" data-action="${action}" ${disabled?"disabled":""}>${label}</button></div>`;
+if(tab==="seeds"){html=`<div class="shop">${crops.map((c,i)=>`<button class="crop ${selected===i?"on":""} ${L<c.level?"lock":""}" data-crop="${i}"><span>${c.emoji}</span>${L<c.level?"🔒 "+c.level:"🪙 "+c.cost}<small>${c.name}</small></button>`).join("")}</div><p class="mut">${crops[selected].emoji} <b>${crops[selected].name}</b> — وقت النمو ${fmt(crops[selected].grow*Math.pow(.9,player.speed))} · السعر ${crops[selected].cost} · سعر البيع الحالي ${getCropPrice(selected)}</p>`}
+if(tab==="shop"){html=item("🌍","أرض إضافية",`عدد القطع ${player.plots}/36`,"land",player.plots>=36?"اكتملت":"🪙 "+Math.round(40*1.18**(player.plots-12)),player.plots>=36)+item("⚡","سرعة النمو",`المستوى ${player.speed}/5`,"speed",player.speed>=5?"اكتمل":"🪙 "+Math.round(150*2.5**player.speed),player.speed>=5)+item("🧪","سماد","يقلل وقت نمو المحصول إلى النصف","fertilizer","🪙 25")+item("🚜","حصّادة وبذّارة","تفعيل الحصاد والزراعة الجماعية","harvester",player.harvester?"مملوكة":"🪙 400",!!player.harvester)}
+if(tab==="bag"){const keys=Object.keys(player.inventory).filter(k=>player.inventory[k]>0);if(!keys.length)html='<p class="mut">المخزن فارغ. احصد المحاصيل أولًا.</p>';else{html=keys.map(k=>{const isCrop=k.startsWith("c"),i=Number(k.slice(1)),o=isCrop?crops[i]:animals[i],emoji=isCrop?o.emoji:o.product,name=isCrop?o.name:o.productName,price=isCrop?getCropPrice(i):o.price;return item(emoji,`${name} × ${player.inventory[k]}`,"سعر الوحدة "+price+" عملة","sell:"+k,"بيع الكل")}).join("")+`<button class="btn alt" data-action="sellAll" style="width:100%;margin-top:8px">💰 بيع كل المخزون</button>`}}
+if(tab==="animals"){html=animals.map((a,i)=>{const count=player.animals[i]||0,ready=Math.min(8*count,Math.floor((Date.now()-player.animalAt[i])/(a.seconds*1000))*count),cost=Math.round(a.cost*1.6**count);return item(a.emoji,`${a.name} × ${count}`,`${a.product} إنتاج كل ${fmt(a.seconds)} · جاهز: ${ready}${L<a.level?" · 🔒 مستوى "+a.level:""}`,ready?"collect:"+i:"buyAnimal:"+i,ready?"اجمع "+a.product:count>=6?"الحد الأقصى":"شراء 🪙 "+cost,ready===0&&(count>=6||L<a.level))}).join("")}
+$("#panel").innerHTML=html}
+function finish(){savePlayer();renderHUD();renderGrid();renderModes();renderPanel();renderPlayers()}
+function harvest(i){const p=player.plants[i];if(!p)return false;const f=(Date.now()-p.plantedAt+(p.waterBonus||0))/(crops[p.crop].grow*1000*Math.pow(.9,player.speed));if(f<1)return false;const key="c"+p.crop;player.inventory[key]=(player.inventory[key]||0)+(Math.random()<.08?2:1);addXP(2+Math.ceil(p.crop/2));player.plants[i]=null;return true}
+function handlePlot(i){if(viewUid!==user.uid){pop("زيارة المزارع للعرض فقط في هذه النسخة");return}const p=player.plants[i];if(!p){const c=crops[selected];if(level(player.xp)<c.level)return pop("تحتاج مستوى "+c.level);if(player.coins<c.cost)return pop("العملات غير كافية");player.coins-=c.cost;player.plants[i]={crop:selected,plantedAt:Date.now(),waterBonus:0};}else{const f=(Date.now()-p.plantedAt+(p.waterBonus||0))/(crops[p.crop].grow*1000*Math.pow(.9,player.speed));if(f>=1)harvest(i);else if(mode==="fert"){if(player.fertilizer<1)return pop("لا يوجد سماد؛ اشترِ من المتجر");player.fertilizer--;p.waterBonus=(p.waterBonus||0)+(Date.now()-p.plantedAt+(p.waterBonus||0))/2;return finish()}else return pop("المحصول لم ينضج بعد")}finish()}
+async function action(a){if(a.startsWith("sell:")){const k=a.slice(5),n=player.inventory[k]||0;if(!n)return;const isCrop=k.startsWith("c"),i=Number(k.slice(1)),price=isCrop?getCropPrice(i):animals[i].price;player.coins+=n*price;player.inventory[k]=0;finish();return}
+switch(a){case"land":if(player.plots<36){const c=Math.round(40*1.18**(player.plots-12));if(player.coins<c)return pop("العملات غير كافية");player.coins-=c;player.plots++}break;
+case"speed":if(player.speed<5){const c=Math.round(150*2.5**player.speed);if(player.coins<c)return pop("العملات غير كافية");player.coins-=c;player.speed++}break;
+case"fertilizer":if(player.coins<25)return pop("العملات غير كافية");player.coins-=25;player.fertilizer++;break;
+case"harvester":if(player.coins<400)return pop("العملات غير كافية");player.coins-=400;player.harvester=1;break;
+case"sellAll":for(const k of Object.keys(player.inventory)){const isCrop=k.startsWith("c"),i=Number(k.slice(1)),price=isCrop?getCropPrice(i):animals[i].price;player.coins+=(player.inventory[k]||0)*price;player.inventory[k]=0}break;
+default:if(a.startsWith("buyAnimal:")){const i=+a.split(":")[1],n=player.animals[i]||0,c=Math.round(animals[i].cost*1.6**n);if(level(player.xp)<animals[i].level)return pop("تحتاج مستوى "+animals[i].level);if(n>=6||player.coins<c)return pop("لا يمكن الشراء؛ تحقق من العملات والحد الأقصى");player.coins-=c;if(!n)player.animalAt[i]=Date.now();player.animals[i]++}
+else if(a.startsWith("collect:")){const i=+a.split(":")[1],an=animals[i],n=player.animals[i]||0,r=Math.min(8*n,Math.floor((Date.now()-player.animalAt[i])/(an.seconds*1000))*n);if(r){player.inventory["a"+i]=(player.inventory["a"+i]||0)+r;player.animalAt[i]=Date.now()}else return pop("لا يوجد إنتاج جاهز")}}
+finish()}
+async function sendMessage(text){const msg=text.trim();if(!msg||!user||!roomId)return;try{await addDoc(collection(db,"rooms",roomId,"chat"),{uid:user.uid,name:player.name,message:msg,createdAt:serverTimestamp(),createdMs:Date.now()});$("#message").value=""}catch(e){pop("تعذر إرسال الرسالة: "+errorText(e))}}
+function subscribeRoom(){if(playerUnsub)playerUnsub();if(chatUnsub)chatUnsub();if(roomPlayersUnsub)roomPlayersUnsub();
+roomPlayersUnsub=onSnapshot(collection(db,"rooms",roomId,"players"),snap=>{allPlayers={};snap.forEach(d=>{allPlayers[d.id]=normalizePlayer(d.data(),d.data().name||"مزارع")});if(player&&allPlayers[user.uid])player=normalizePlayer(allPlayers[user.uid],player.name);renderPlayers();renderGrid()},e=>notify("مزامنة اللاعبين: "+errorText(e)));
+playerUnsub=onSnapshot(playerDoc(),snap=>{if(snap.exists()){const incoming=snap.data();if(!player)player=normalizePlayer(incoming);else if(incoming.updatedAt>player.updatedAt+1000){player=normalizePlayer(incoming,player.name)}allPlayers[user.uid]=player;renderHUD();renderPanel();renderGrid();renderPlayers()}},e=>notify("حفظ/قراءة المزرعة: "+errorText(e)));
+chatUnsub=onSnapshot(query(collection(db,"rooms",roomId,"chat"),orderBy("createdMs","asc"),limit(50)),snap=>{const log=$("#log");log.innerHTML="";snap.forEach(d=>{const x=d.data();if(x.uid===user.uid&&chatKeys.has(d.id))return;chatKeys.add(d.id);appendChat(x.name||"مزارع",x.message||"")})},e=>notify("الشات: "+errorText(e)));
+}
+$("#newTab").onclick=()=>{joiningMode="new";$("#newTab").classList.add("on");$("#joinTab").classList.remove("on")};
+$("#joinTab").onclick=()=>{joiningMode="join";$("#joinTab").classList.add("on");$("#newTab").classList.remove("on")};
+$("#start").onclick=async()=>{setError("");const name=$("#server").value.trim().toLowerCase(),password=$("#password").value,n=($("#playerName").value.trim()||"مزارع").slice(0,14);if(!/^[a-z0-9_-]{3,20}$/.test(name))return setError("اسم السيرفر يجب أن يكون 3-20 حرفًا إنجليزيًا أو رقمًا أو - أو _.");if(password.length<4)return setError("اجعل كلمة مرور السيرفر 4 أحرف على الأقل.");if(!crypto.subtle)return setError("افتح الصفحة عبر HTTPS أو localhost.");$("#start").disabled=true;
+try{if(!auth.currentUser){await signInAnonymously(auth)}user=auth.currentUser;roomId=await hashRoom(name,password);roomName=name;const rd=roomDoc(),snap=await getDoc(rd);
+if(joiningMode==="new"){if(snap.exists())throw new Error("السيرفر موجود بالفعل؛ اختر «ادخل سيرفر».");await setDoc(rd,{name,createdAt:serverTimestamp(),createdMs:Date.now(),version:1})}
+else if(!snap.exists())throw new Error("اسم السيرفر أو الباسورد غير صحيح.");
+const pd=playerDoc(),ps=await getDoc(pd);player=ps.exists()?normalizePlayer(ps.data(),n):defaultPlayer(n);player.name=n;await setDoc(pd,player);viewUid=user.uid;allPlayers[user.uid]=player;$("#login").hidden=true;$("#game").hidden=false;$("#serverLabel").textContent=roomName;$("#log").innerHTML="";chatKeys.clear();subscribeRoom();renderHUD();renderGrid();renderModes();renderPanel();renderPlayers();notify("متصل بـ Cloud Firestore");saySystem("أهلًا "+n+"! شارك بيانات السيرفر مع صاحبك.");}
+catch(e){setError(errorText(e));notify("تعذر الاتصال بقاعدة البيانات")}finally{$("#start").disabled=false}};
+$("#players").addEventListener("click",e=>{const b=e.target.closest("[data-uid]");if(!b)return;viewUid=b.dataset.uid;renderPlayers();renderGrid()});
+$("#grid").addEventListener("click",e=>{const b=e.target.closest("[data-plot]");if(b)handlePlot(+b.dataset.plot)});
+$("#modes").addEventListener("click",e=>{const b=e.target.closest("[data-mode]");if(!b)return;mode=b.dataset.mode;if(mode==="harvestAll"){let n=0;for(let i=0;i<player.plots;i++)if(harvest(i))n++;pop("تم حصاد "+n+" قطعة");mode="plant";finish()}else if(mode==="plantAll"){const c=crops[selected];let n=0;for(let i=0;i<player.plots;i++)if(!player.plants[i]&&player.coins>=c.cost&&level(player.xp)>=c.level){player.coins-=c.cost;player.plants[i]={crop:selected,plantedAt:Date.now(),waterBonus:0};n++}pop("تمت زراعة "+n+" قطعة");mode="plant";finish()}else renderModes()});
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){tab=b.dataset.tab;renderPanel()}});
+$("#panel").addEventListener("click",e=>{const crop=e.target.closest("[data-crop]");if(crop){const i=+crop.dataset.crop;if(level(player.xp)<crops[i].level)return pop("تحتاج مستوى "+crops[i].level);selected=i;mode="plant";renderPanel();renderModes();return}const b=e.target.closest("[data-action]");if(b&&!b.disabled)action(b.dataset.action)});
+$("#send").onclick=()=>sendMessage($("#message").value);$("#message").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage($("#message").value)});$("#quick").addEventListener("click",e=>{if(e.target.tagName==="BUTTON")sendMessage(e.target.textContent)});
+$("#invite").onclick=async()=>{const share=`🌾 تعالى العب معايا في مزرعة الصحاب!\nاسم السيرفر: ${roomName}\nالباسورد: ${$("#password").value}`;try{await navigator.clipboard.writeText(share);pop("تم نسخ بيانات الدعوة")}catch{window.prompt("انسخ بيانات الدعوة:",share)}};
+setInterval(()=>{if(!player||$("#game").hidden)return;renderGrid();if(tab==="animals")renderPanel()},1000);
+try{await signInAnonymously(auth);notify("Firebase جاهز — أنشئ سيرفر أو انضم لسيرفر")}catch(e){notify("فعّل Anonymous Authentication من Firebase Console")}
+</script>
+</body></html>
